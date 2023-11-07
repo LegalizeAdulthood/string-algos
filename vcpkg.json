@@ -1,0 +1,9 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+  "name": "stringer",
+  "version": "1.0.0",
+  "dependencies": [
+    "boost-algorithm",
+    "gtest"
+  ]
+}
