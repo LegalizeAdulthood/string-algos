@@ -21,6 +21,7 @@ void transformLines(LineTransformer transformer, std::istream &input, std::ostre
         if (input)
         {
             transformer(output, line);
+            output << '\n';
         }
     }
 }

@@ -86,12 +86,14 @@ TEST(TestString, tooManyArgumentsEmitsUsage)
     EXPECT_EQ(s_usageMessage, err.str());
 }
 
+using MockTransformer = testing::StrictMock<testing::MockFunction<stringer::LineTransformer>>;
+
 TEST(TestTransformLines, invokesTransformerPerInputLine)
 {
     using namespace testing;
-    std::istringstream                               input{"one\ntwo\n"};
-    std::ostringstream                               output;
-    testing::MockFunction<stringer::LineTransformer> mockTransformer;
+    std::istringstream input{"one\ntwo\n"};
+    std::ostringstream output;
+    MockTransformer    mockTransformer;
     EXPECT_CALL(mockTransformer, Call(_, "one"));
     EXPECT_CALL(mockTransformer, Call(_, "two"));
 
@@ -101,7 +103,6 @@ TEST(TestTransformLines, invokesTransformerPerInputLine)
 TEST(TestTransformLines, invokesTransformerForPartialInputLine)
 {
     using namespace testing;
-    using MockTransformer = StrictMock<MockFunction<stringer::LineTransformer>>;
     std::istringstream input{"one\ntwo"};
     std::ostringstream output;
     MockTransformer    mockTransformer;
@@ -109,4 +110,19 @@ TEST(TestTransformLines, invokesTransformerForPartialInputLine)
     EXPECT_CALL(mockTransformer, Call(_, "two"));
 
     stringer::transformLines(mockTransformer.AsStdFunction(), input, output);
+}
+
+TEST(TestTransformLines, writesLinesToOutput)
+{
+    using namespace testing;
+    auto               writer = [](std::ostream &str, const std::string &line) { str << line; };
+    std::istringstream input{"one\ntwo"};
+    std::ostringstream output;
+    MockTransformer    mockTransformer;
+    EXPECT_CALL(mockTransformer, Call(_, "one")).WillOnce(writer);
+    EXPECT_CALL(mockTransformer, Call(_, "two")).WillOnce(writer);
+
+    stringer::transformLines(mockTransformer.AsStdFunction(), input, output);
+
+    EXPECT_EQ(input.str() + '\n', output.str());
 }
