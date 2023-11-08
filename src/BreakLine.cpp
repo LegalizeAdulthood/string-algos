@@ -22,7 +22,7 @@ void squishInteriorWhiteSpace(std::string &line)
     static auto isSpace = [](char c) { return std::isspace(static_cast<unsigned char>(c)) != 0; };
     static auto finder = token_finder(isSpace, boost::algorithm::token_compress_on);
     static auto formatter = boost::algorithm::const_formatter(" ");
-    find_format(line, finder, formatter);
+    find_format_all(line, finder, formatter);
 }
 
 enum class Pivot

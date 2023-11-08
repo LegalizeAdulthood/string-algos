@@ -112,11 +112,11 @@ TEST_F(TestBreakLine, lineWithoutWhiteSpaceExactlyLineLengthNotFolded)
 
 TEST_F(TestBreakLine, multipleInteriorWhiteSpaceSquished)
 {
-    const std::string line{repeat10("x \ty")};
+    const std::string line{repeat10("x \ty\t\t\t   z")};
 
     stringAlgos::breakLine(m_output, line);
 
-    EXPECT_EQ(repeat10("x") + ' ' + repeat10("y"), m_output.str());
+    EXPECT_EQ(boost::algorithm::join(std::vector{repeat10("x"), repeat10("y"), repeat10("z")}, " "), m_output.str());
 }
 
 TEST_F(TestBreakLine, preferFoldAtNonAlphaNumeric)
