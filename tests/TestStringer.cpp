@@ -47,42 +47,36 @@ breakline   Fold long lines at 80 columns and squish multiple whitespace.
 TEST(TestStringer, missingArgumentsEmitsUsage)
 {
     std::ostringstream       err;
-    std::ostringstream       out;
     std::vector<std::string> args{"stringer"};
     int                      argc = static_cast<int>(args.size());
 
-    const int result = stringer::main(argc, makeArgV(args).data(), err, out);
+    const int result = stringer::main(argc, makeArgV(args).data(), err);
 
     EXPECT_EQ(1, result);
-    EXPECT_TRUE(out.str().empty());
     EXPECT_EQ(s_usageMessage, err.str());
 }
 
 TEST(TestStringer, badCommandEmitsUsage)
 {
     std::ostringstream       err;
-    std::ostringstream       out;
     std::vector<std::string> args{"stringer", "foo"};
     int                      argc = static_cast<int>(args.size());
 
-    const int result = stringer::main(argc, makeArgV(args).data(), err, out);
+    const int result = stringer::main(argc, makeArgV(args).data(), err);
 
     EXPECT_EQ(1, result);
-    EXPECT_TRUE(out.str().empty());
     EXPECT_EQ(s_usageMessage, err.str());
 }
 
 TEST(TestString, tooManyArgumentsEmitsUsage)
 {
     std::ostringstream       err;
-    std::ostringstream       out;
     std::vector<std::string> args{"stringer", "tolower", "infile", "outfile", "extra"};
     int                      argc = static_cast<int>(args.size());
 
-    const int result = stringer::main(argc, makeArgV(args).data(), err, out);
+    const int result = stringer::main(argc, makeArgV(args).data(), err);
 
     EXPECT_EQ(1, result);
-    EXPECT_TRUE(out.str().empty());
     EXPECT_EQ(s_usageMessage, err.str());
 }
 

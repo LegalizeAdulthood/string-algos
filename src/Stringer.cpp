@@ -4,6 +4,7 @@
 #include <ToLower.h>
 #include <ToUpper.h>
 
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <string>
@@ -48,7 +49,7 @@ breakline   Fold long lines at 80 columns and squish multiple whitespace.
     return 1;
 }
 
-int main(int argc, char *argv[], std::ostream &err, std::ostream &out)
+int main(int argc, char *argv[], std::ostream &err)
 {
     auto usage = [&] { return usageMessage(argv[0], err); };
     if (argc < 2 || argc > 4)
@@ -66,6 +67,21 @@ int main(int argc, char *argv[], std::ostream &err, std::ostream &out)
         return usage();
     }
 
+    if (argc == 2 || (argc == 3 && std::string{"-"} == argv[2]))
+    {
+        transformLines(it->second, std::cin, std::cout);
+    }
+    else if (argc == 3 || (argc == 4 && std::string{"-"} == argv[3]))
+    {
+        std::ifstream in{argv[2]};
+        transformLines(it->second, in, std::cout);
+    }
+    else
+    {
+        std::ifstream in{argv[2]};
+        std::ofstream out{argv[3]};
+        transformLines(it->second, in, out);
+    }
     return 0;
 }
 
