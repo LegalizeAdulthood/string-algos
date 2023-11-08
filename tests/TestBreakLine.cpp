@@ -184,3 +184,14 @@ two
 )",
               m_output.str());
 }
+
+TEST_F(TestBreakLine, preferBreakingAtLastWhiteSpace)
+{
+    const std::vector<std::string> lines{"This is a really long text line with multiple instances of white space that",
+                                         "could all potentially be break points, but only the last white space before",
+                                         "the line length should be chosen."};
+
+    stringAlgos::breakLine(m_output, boost::algorithm::join(lines, " "));
+
+    EXPECT_EQ(boost::algorithm::join(lines, s_separator), m_output.str());
+}

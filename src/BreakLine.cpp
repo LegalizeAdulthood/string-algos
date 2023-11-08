@@ -68,11 +68,22 @@ bool breakLine(std::ostream &output, std::string_view input)
     static auto isWordFinder = token_finder(isWord, boost::algorithm::token_compress_on);
     static auto isNonSpace = [](char c) { return std::isspace(static_cast<unsigned char>(c)) == 0; };
     static auto isNonSpaceFinder = token_finder(isNonSpace, boost::algorithm::token_compress_on);
-    size_t      pad = 0;
+    size_t      pad{};
     while (line.length() > LINE_LENGTH - pad)
     {
-        const StringRange nonSpaceText = boost::algorithm::find(line, isNonSpaceFinder);
-        if (breakRange(line, pad, nonSpaceText, output, Pivot::Drop))
+        StringRange spaceFold = boost::algorithm::find(line, isNonSpaceFinder);
+        if (!spaceFold.empty() && spaceFold.size() <= LINE_LENGTH - pad)
+        {
+            StringRange search{spaceFold.end(), line.end()};
+            StringRange next = boost::algorithm::find(search, isNonSpaceFinder);
+            while (!next.empty() && spaceFold.size() + next.size() < LINE_LENGTH - pad)
+            {
+                spaceFold.advance_end(next.size() + 1);
+                search.advance_begin(next.size() + 1);
+                next = boost::algorithm::find(search, isNonSpaceFinder);
+            }
+        }
+        if (breakRange(line, pad, spaceFold, output, Pivot::Drop))
         {
             pad = 4;
             continue;
