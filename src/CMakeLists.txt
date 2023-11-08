@@ -7,11 +7,13 @@ add_library(StringAlgos
     ToUpper.cpp
     BreakLine.h
     BreakLine.cpp
+    Stringer.h
+    Stringer.cpp
 )
 set_target_properties(StringAlgos PROPERTIES FOLDER Libraries)
 target_include_directories(StringAlgos PUBLIC .)
 target_link_libraries(StringAlgos PRIVATE Boost::boost)
 
-add_executable(Stringer Stringer.cpp)
+add_executable(Stringer Tool.cpp)
 set_target_properties(Stringer PROPERTIES FOLDER Tools)
 target_link_libraries(Stringer PUBLIC StringAlgos)
