@@ -1,7 +1,13 @@
 #include <BreakLine.h>
 
-#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/trim.hpp>
 
-void stringAlgos::breakLine(std::ostream &output, std::string_view input)
+namespace stringAlgos
 {
+
+void breakLine(std::ostream &output, std::string_view input)
+{
+    output << boost::algorithm::trim_copy(input);
 }
+
+} // namespace stringAlgos

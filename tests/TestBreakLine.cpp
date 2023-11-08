@@ -4,12 +4,22 @@
 
 #include <sstream>
 
-TEST(TestBreakLine, emptyLineUnchanged)
+class TestBreakLine : public testing::Test
 {
-    std::ostringstream     output;
-    const std::string_view input;
+protected:
+    std::ostringstream output;
+};
 
-    stringAlgos::breakLine(output, input);
+TEST_F(TestBreakLine, emptyLineUnchanged)
+{
+    stringAlgos::breakLine(output, "");
 
-    EXPECT_EQ(output.str(), input);
+    EXPECT_TRUE(output.str().empty());
+}
+
+TEST_F(TestBreakLine, leadingHorizontalWhiteSpaceDropped)
+{
+    stringAlgos::breakLine(output, " \tLeading horizontal white space.");
+
+    EXPECT_EQ(output.str(), "Leading horizontal white space.");
 }
