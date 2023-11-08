@@ -25,6 +25,27 @@ void squishInteriorWhiteSpace(std::string &line)
     find_format(line, finder, formatter);
 }
 
+enum class Pivot
+{
+    Keep = 1,
+    Drop = 2,
+};
+
+using StringRange = boost::iterator_range<std::string::iterator>;
+
+bool breakRange(std::string &line, const StringRange &range, std::ostream &output, Pivot dropPivot)
+{
+    if (!range.empty() && range.size() <= LINE_LENGTH)
+    {
+        const std::string_view text{boost::begin(range), boost::end(range)};
+        output << text << "\n    ";
+        line = line.substr(text.length() + (dropPivot == Pivot::Drop ? 1 : 0));
+        return true;
+    }
+
+    return false;
+}
+
 } // namespace
 
 void breakLine(std::ostream &output, std::string_view input)
@@ -34,20 +55,24 @@ void breakLine(std::ostream &output, std::string_view input)
 
     static auto isWord = [](char c) { return std::isalnum(static_cast<unsigned char>(c)) != 0 || c == '_'; };
     static auto isWordFinder = token_finder(isWord, boost::algorithm::token_compress_on);
+    static auto isNonSpace = [](char c) { return std::isspace(static_cast<unsigned char>(c)) == 0; };
+    static auto isNonSpaceFinder = token_finder(isNonSpace, boost::algorithm::token_compress_on);
     while (line.length() > LINE_LENGTH)
     {
-        auto pos = boost::algorithm::find(line, isWordFinder);
-        if (!pos.empty() && pos.size() <= LINE_LENGTH)
+        const StringRange nonSpaceText = boost::algorithm::find(line, isNonSpaceFinder);
+        if (breakRange(line, nonSpaceText, output, Pivot::Drop))
         {
-            const std::string_view word{boost::begin(pos), boost::end(pos)};
-            output << word << "\n    ";
-            line = line.substr(word.length());
+            continue;
         }
-        else
+
+        const StringRange wordText = boost::algorithm::find(line, isWordFinder);
+        if (breakRange(line, wordText, output, Pivot::Keep))
         {
-            output << line.substr(0, LINE_LENGTH) << "\n    ";
-            line = line.substr(LINE_LENGTH);
+            continue;
         }
+
+        output << line.substr(0, LINE_LENGTH) << "\n    ";
+        line = line.substr(LINE_LENGTH);
     }
     output << line;
 }

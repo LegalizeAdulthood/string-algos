@@ -112,3 +112,13 @@ TEST_F(TestBreakLine, hardFoldWhenNonAlphaNumericPastLineLength)
 
     EXPECT_EQ(first + s_separator + second, m_output.str());
 }
+
+TEST_F(TestBreakLine, preferFoldAtWhiteSpace)
+{
+    const std::string first{repeat("012345")};
+    const std::string second{"xx__" + repeat("67")};
+
+    stringAlgos::breakLine(m_output, first + ' ' + second);
+
+    EXPECT_EQ(first + s_separator + second, m_output.str());
+}
