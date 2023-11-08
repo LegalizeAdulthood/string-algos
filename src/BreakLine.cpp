@@ -33,9 +33,9 @@ enum class Pivot
 
 using StringRange = boost::iterator_range<std::string::iterator>;
 
-bool breakRange(std::string &line, const StringRange &range, std::ostream &output, Pivot dropPivot)
+bool breakRange( std::string &line, size_t pad, const StringRange &range, std::ostream &output, Pivot dropPivot )
 {
-    if (!range.empty() && range.size() <= LINE_LENGTH)
+    if (!range.empty() && range.size() <= LINE_LENGTH - pad)
     {
         const std::string_view text{boost::begin(range), boost::end(range)};
         output << text << "\n    ";
@@ -57,22 +57,26 @@ void breakLine(std::ostream &output, std::string_view input)
     static auto isWordFinder = token_finder(isWord, boost::algorithm::token_compress_on);
     static auto isNonSpace = [](char c) { return std::isspace(static_cast<unsigned char>(c)) == 0; };
     static auto isNonSpaceFinder = token_finder(isNonSpace, boost::algorithm::token_compress_on);
-    while (line.length() > LINE_LENGTH)
+    size_t pad = 0;
+    while (line.length() > LINE_LENGTH - pad)
     {
         const StringRange nonSpaceText = boost::algorithm::find(line, isNonSpaceFinder);
-        if (breakRange(line, nonSpaceText, output, Pivot::Drop))
+        if (breakRange(line, pad, nonSpaceText, output, Pivot::Drop))
         {
+            pad = 4;
             continue;
         }
 
         const StringRange wordText = boost::algorithm::find(line, isWordFinder);
-        if (breakRange(line, wordText, output, Pivot::Keep))
+        if (breakRange(line, pad, wordText, output, Pivot::Keep))
         {
+            pad = 4;
             continue;
         }
 
-        output << line.substr(0, LINE_LENGTH) << "\n    ";
-        line = line.substr(LINE_LENGTH);
+        output << line.substr(0, LINE_LENGTH - pad) << "\n    ";
+        line = line.substr(LINE_LENGTH - pad);
+        pad = 4;
     }
     output << line;
 }
