@@ -37,7 +37,7 @@ bool breakRange(std::string &line, size_t pad, const StringRange &range, std::os
 {
     if (!range.empty() && range.size() <= LINE_LENGTH - pad)
     {
-        const std::string_view text{boost::begin(range), boost::end(range)};
+        const std::string_view text{range.begin(), range.end()};
         output << text << "\n    ";
         line = line.substr(text.length() + (dropPivot == Pivot::Drop ? 1 : 0));
         return true;
