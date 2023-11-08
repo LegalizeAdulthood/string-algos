@@ -1,5 +1,7 @@
 #include <BreakLine.h>
 
+#include <Stringer.h>
+
 #include <gtest/gtest.h>
 
 #include <iterator>
@@ -44,21 +46,21 @@ TEST(TestRepeat, count)
 {
     const std::string line{repeatCount("0123", 4)};
 
-    EXPECT_EQ(4*4U, line.size());
+    EXPECT_EQ(4 * 4U, line.size());
 }
 
 TEST(TestRepeat, count6)
 {
     const std::string line{repeat6("0123")};
 
-    EXPECT_EQ(4*6U, line.size());
+    EXPECT_EQ(4 * 6U, line.size());
 }
 
 TEST(TestRepeat, count10)
 {
     const std::string line{repeat10("0123")};
 
-    EXPECT_EQ(4*10U, line.size());
+    EXPECT_EQ(4 * 10U, line.size());
 }
 
 class TestBreakLine : public testing::Test
@@ -163,4 +165,22 @@ TEST_F(TestBreakLine, multipleFoldsRequired)
     stringAlgos::breakLine(m_output, boost::algorithm::join(parts, ""));
 
     EXPECT_EQ(boost::algorithm::join(parts, s_separator), m_output.str());
+}
+
+TEST_F(TestBreakLine, multipleBlankLinesSquished)
+{
+    std::istringstream input{R"(one
+
+
+
+two
+)"};
+
+    stringer::transformLines(stringAlgos::breakLine, input, m_output);
+
+    EXPECT_EQ(R"(one
+
+two
+)",
+              m_output.str());
 }

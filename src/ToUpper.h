@@ -6,6 +6,6 @@
 namespace stringAlgos
 {
 
-void toUpper(std::ostream &output, std::string_view input);
+bool toUpper(std::ostream &output, std::string_view input);
 
 } // namespace stringAlgos

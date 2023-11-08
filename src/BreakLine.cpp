@@ -33,7 +33,7 @@ enum class Pivot
 
 using StringRange = boost::iterator_range<std::string::iterator>;
 
-bool breakRange( std::string &line, size_t pad, const StringRange &range, std::ostream &output, Pivot dropPivot )
+bool breakRange(std::string &line, size_t pad, const StringRange &range, std::ostream &output, Pivot dropPivot)
 {
     if (!range.empty() && range.size() <= LINE_LENGTH - pad)
     {
@@ -46,18 +46,29 @@ bool breakRange( std::string &line, size_t pad, const StringRange &range, std::o
     return false;
 }
 
+bool g_lastLineEmpty{false};
+
 } // namespace
 
-void breakLine(std::ostream &output, std::string_view input)
+bool breakLine(std::ostream &output, std::string_view input)
 {
     std::string line{boost::algorithm::trim_copy(input)};
+    const bool  empty = line.empty();
+    if (empty)
+    {
+        if (g_lastLineEmpty)
+        {
+            return false;
+        }
+    }
+    g_lastLineEmpty = empty;
     squishInteriorWhiteSpace(line);
 
     static auto isWord = [](char c) { return std::isalnum(static_cast<unsigned char>(c)) != 0 || c == '_'; };
     static auto isWordFinder = token_finder(isWord, boost::algorithm::token_compress_on);
     static auto isNonSpace = [](char c) { return std::isspace(static_cast<unsigned char>(c)) == 0; };
     static auto isNonSpaceFinder = token_finder(isNonSpace, boost::algorithm::token_compress_on);
-    size_t pad = 0;
+    size_t      pad = 0;
     while (line.length() > LINE_LENGTH - pad)
     {
         const StringRange nonSpaceText = boost::algorithm::find(line, isNonSpaceFinder);
@@ -79,6 +90,7 @@ void breakLine(std::ostream &output, std::string_view input)
         pad = 4;
     }
     output << line;
+    return true;
 }
 
 } // namespace stringAlgos

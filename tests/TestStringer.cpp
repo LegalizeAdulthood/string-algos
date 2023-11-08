@@ -49,7 +49,7 @@ TEST(TestStringer, missingArgumentsEmitsUsage)
     std::ostringstream       err;
     std::ostringstream       out;
     std::vector<std::string> args{"stringer"};
-    int                      argc = args.size();
+    int                      argc = static_cast<int>(args.size());
 
     const int result = stringer::main(argc, makeArgV(args).data(), err, out);
 
@@ -63,7 +63,7 @@ TEST(TestStringer, badCommandEmitsUsage)
     std::ostringstream       err;
     std::ostringstream       out;
     std::vector<std::string> args{"stringer", "foo"};
-    int                      argc = args.size();
+    int                      argc = static_cast<int>(args.size());
 
     const int result = stringer::main(argc, makeArgV(args).data(), err, out);
 
@@ -77,7 +77,7 @@ TEST(TestString, tooManyArgumentsEmitsUsage)
     std::ostringstream       err;
     std::ostringstream       out;
     std::vector<std::string> args{"stringer", "tolower", "infile", "outfile", "extra"};
-    int                      argc = args.size();
+    int                      argc = static_cast<int>(args.size());
 
     const int result = stringer::main(argc, makeArgV(args).data(), err, out);
 
@@ -119,10 +119,25 @@ TEST(TestTransformLines, writesLinesToOutput)
     std::istringstream input{"one\ntwo"};
     std::ostringstream output;
     MockTransformer    mockTransformer;
-    EXPECT_CALL(mockTransformer, Call(_, "one")).WillOnce(writer);
-    EXPECT_CALL(mockTransformer, Call(_, "two")).WillOnce(writer);
+    EXPECT_CALL(mockTransformer, Call(_, "one")).WillOnce(DoAll(writer, Return(true)));
+    EXPECT_CALL(mockTransformer, Call(_, "two")).WillOnce(DoAll(writer, Return(true)));
 
     stringer::transformLines(mockTransformer.AsStdFunction(), input, output);
 
     EXPECT_EQ(input.str() + '\n', output.str());
+}
+
+TEST(TestTransformLines, skipsNewLineAccordingToTransformer)
+{
+    using namespace testing;
+    auto               writer = [](std::ostream &str, const std::string &line) { str << line; };
+    std::istringstream input{"one\ntwo"};
+    std::ostringstream output;
+    MockTransformer    mockTransformer;
+    EXPECT_CALL(mockTransformer, Call(_, "one")).WillOnce(DoAll(writer, Return(false)));
+    EXPECT_CALL(mockTransformer, Call(_, "two")).WillOnce(DoAll(writer, Return(true)));
+
+    stringer::transformLines(mockTransformer.AsStdFunction(), input, output);
+
+    EXPECT_EQ("onetwo\n", output.str());
 }

@@ -6,6 +6,6 @@
 namespace stringAlgos
 {
 
-void toLower(std::ostream &output, std::string_view input);
+bool toLower(std::ostream &output, std::string_view input);
 
 } // namespace stringAlgos

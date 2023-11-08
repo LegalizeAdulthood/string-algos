@@ -6,6 +6,6 @@
 namespace stringAlgos
 {
 
-void breakLine(std::ostream &output, std::string_view input);
+bool breakLine(std::ostream &output, std::string_view input);
 
 } // namespace stringAlgos

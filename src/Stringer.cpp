@@ -18,9 +18,13 @@ void transformLines(LineTransformer transformer, std::istream &input, std::ostre
     {
         std::string line;
         std::getline(input, line);
-        if (input)
+        if (!input)
         {
-            transformer(output, line);
+            break;
+        }
+
+        if (transformer(output, line))
+        {
             output << '\n';
         }
     }

@@ -7,7 +7,7 @@
 namespace stringer
 {
 
-using LineTransformer = std::function<void(std::ostream &output, const std::string &line)>;
+using LineTransformer = std::function<bool(std::ostream &output, const std::string &line)>;
 
 void transformLines(LineTransformer transformer, std::istream &input, std::ostream &output);
 
