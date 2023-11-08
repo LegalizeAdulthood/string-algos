@@ -1,0 +1,27 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 23,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "default",
+      "displayName": "Default Config",
+      "description": "Configure with vcpkg for dependencies",
+      "binaryDir": "${sourceDir}/../build",
+      "toolchainFile": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "default",
+      "displayName": "default",
+      "configurePreset": "default",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}
