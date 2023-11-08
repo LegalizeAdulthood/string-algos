@@ -1,5 +1,8 @@
 #pragma once
 
+#include <ostream>
+#include <string_view>
+
 namespace stringAlgos
 {
 

@@ -31,5 +31,5 @@ TEST_F(TestToLower, upperCaseConvertedToLowerCase)
 {
     stringAlgos::toLower(output, "This is a mixed case String for the Algorithm");
 
-    EXPECT_EQ( output.str(), "this is a mixed case string for the algorithm");
+    EXPECT_EQ(output.str(), "this is a mixed case string for the algorithm");
 }
