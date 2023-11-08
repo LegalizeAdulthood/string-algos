@@ -17,6 +17,8 @@ constexpr size_t LINE_LENGTH = 80;
 namespace
 {
 
+bool g_lastLineEmpty{false};
+
 void squishInteriorWhiteSpace(std::string &line)
 {
     static auto isSpace = [](char c) { return std::isspace(static_cast<unsigned char>(c)) != 0; };
@@ -46,7 +48,24 @@ bool breakRange(std::string &line, size_t pad, const StringRange &range, std::os
     return false;
 }
 
-bool g_lastLineEmpty{false};
+StringRange getSpaceFold(std::string &line, size_t pad)
+{
+    static auto isNonSpace = [](char c) { return std::isspace(static_cast<unsigned char>(c)) == 0; };
+    static auto isNonSpaceFinder = token_finder(isNonSpace, boost::algorithm::token_compress_on);
+    StringRange spaceFold = boost::algorithm::find(line, isNonSpaceFinder);
+    if (!spaceFold.empty() && spaceFold.size() <= LINE_LENGTH - pad)
+    {
+        StringRange search{spaceFold.end(), line.end()};
+        StringRange next = boost::algorithm::find(search, isNonSpaceFinder);
+        while (!next.empty() && spaceFold.size() + next.size() < LINE_LENGTH - pad)
+        {
+            spaceFold.advance_end(next.size() + 1);
+            search.advance_begin(next.size() + 1);
+            next = boost::algorithm::find(search, isNonSpaceFinder);
+        }
+    }
+    return spaceFold;
+}
 
 } // namespace
 
@@ -66,23 +85,10 @@ bool breakLine(std::ostream &output, std::string_view input)
 
     static auto isWord = [](char c) { return std::isalnum(static_cast<unsigned char>(c)) != 0 || c == '_'; };
     static auto isWordFinder = token_finder(isWord, boost::algorithm::token_compress_on);
-    static auto isNonSpace = [](char c) { return std::isspace(static_cast<unsigned char>(c)) == 0; };
-    static auto isNonSpaceFinder = token_finder(isNonSpace, boost::algorithm::token_compress_on);
     size_t      pad{};
     while (line.length() > LINE_LENGTH - pad)
     {
-        StringRange spaceFold = boost::algorithm::find(line, isNonSpaceFinder);
-        if (!spaceFold.empty() && spaceFold.size() <= LINE_LENGTH - pad)
-        {
-            StringRange search{spaceFold.end(), line.end()};
-            StringRange next = boost::algorithm::find(search, isNonSpaceFinder);
-            while (!next.empty() && spaceFold.size() + next.size() < LINE_LENGTH - pad)
-            {
-                spaceFold.advance_end(next.size() + 1);
-                search.advance_begin(next.size() + 1);
-                next = boost::algorithm::find(search, isNonSpaceFinder);
-            }
-        }
+        const StringRange spaceFold{getSpaceFold(line, pad)};
         if (breakRange(line, pad, spaceFold, output, Pivot::Drop))
         {
             pad = 4;
