@@ -129,6 +129,17 @@ TEST_F(TestBreakLine, preferFoldAtNonAlphaNumeric)
     EXPECT_EQ(first + s_separator + second, m_output.str());
 }
 
+TEST_F(TestBreakLine, preferFoldAtLastNonAlphaNumeric)
+{
+    const std::string first{repeat10(".....,(-")};
+    EXPECT_EQ(80, first.length());
+    const std::string second{repeat10(")567")};
+
+    stringAlgos::breakLine(m_output, first + second);
+
+    EXPECT_EQ(first + s_separator + second, m_output.str());
+}
+
 TEST_F(TestBreakLine, hardFoldWhenNonAlphaNumericPastLineLength)
 {
     const std::string first{repeat10("01234567")};

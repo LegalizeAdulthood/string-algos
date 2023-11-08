@@ -5,6 +5,7 @@
 #include <boost/algorithm/string/finder.hpp>
 #include <boost/algorithm/string/formatter.hpp>
 #include <boost/algorithm/string/trim.hpp>
+#include <boost/range/adaptors.hpp>
 
 #include <cctype>
 #include <string>
@@ -67,6 +68,21 @@ StringRange getSpaceFold(std::string &line, size_t pad)
     return spaceFold;
 }
 
+StringRange getWordFold(std::string &line, size_t pad)
+{
+    static auto isNotWord = [](char c) { return std::isalnum(static_cast<unsigned char>(c)) == 0 && c != '_'; };
+    static auto isNotWordFinder = token_finder(isNotWord, boost::algorithm::token_compress_on);
+
+    StringRange subrange{line.begin(), line.begin() + LINE_LENGTH - pad};
+
+    StringRange wordFold = find(subrange, isNotWordFinder);
+    if (!wordFold.empty())
+    {
+        return StringRange{line.begin(), wordFold.begin()};
+    }
+    return StringRange{};
+}
+
 } // namespace
 
 bool breakLine(std::ostream &output, std::string_view input)
@@ -83,9 +99,7 @@ bool breakLine(std::ostream &output, std::string_view input)
     g_lastLineEmpty = empty;
     squishInteriorWhiteSpace(line);
 
-    static auto isWord = [](char c) { return std::isalnum(static_cast<unsigned char>(c)) != 0 || c == '_'; };
-    static auto isWordFinder = token_finder(isWord, boost::algorithm::token_compress_on);
-    size_t      pad{};
+    size_t pad{};
     while (line.length() > LINE_LENGTH - pad)
     {
         const StringRange spaceFold{getSpaceFold(line, pad)};
@@ -95,7 +109,7 @@ bool breakLine(std::ostream &output, std::string_view input)
             continue;
         }
 
-        const StringRange wordText = boost::algorithm::find(line, isWordFinder);
+        const StringRange wordText{getWordFold(line, pad)};
         if (breakRange(line, pad, wordText, output, Pivot::Keep))
         {
             pad = 4;
