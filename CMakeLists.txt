@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.23 FATAL_ERROR)
+
 project(Stringer CXX)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
