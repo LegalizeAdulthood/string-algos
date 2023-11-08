@@ -1,5 +1,6 @@
 #include <BreakLine.h>
 
+#include <boost/algorithm/string/find.hpp>
 #include <boost/algorithm/string/find_format.hpp>
 #include <boost/algorithm/string/finder.hpp>
 #include <boost/algorithm/string/formatter.hpp>
@@ -31,10 +32,22 @@ void breakLine(std::ostream &output, std::string_view input)
     std::string line{boost::algorithm::trim_copy(input)};
     squishInteriorWhiteSpace(line);
 
+    static auto isWord = [](char c) { return std::isalnum(static_cast<unsigned char>(c)) != 0 || c == '_'; };
+    static auto isWordFinder = token_finder(isWord, boost::algorithm::token_compress_on);
     while (line.length() > LINE_LENGTH)
     {
-        output << line.substr(0, LINE_LENGTH) << "\n    ";
-        line = line.substr(LINE_LENGTH);
+        auto pos = boost::algorithm::find(line, isWordFinder);
+        if (!pos.empty() && pos.size() <= LINE_LENGTH)
+        {
+            const std::string_view word{boost::begin(pos), boost::end(pos)};
+            output << word << "\n    ";
+            line = line.substr(word.length());
+        }
+        else
+        {
+            output << line.substr(0, LINE_LENGTH) << "\n    ";
+            line = line.substr(LINE_LENGTH);
+        }
     }
     output << line;
 }

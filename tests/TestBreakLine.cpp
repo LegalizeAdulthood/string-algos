@@ -64,13 +64,15 @@ TEST_F(TestBreakLine, trailingHorizontalWhiteSpaceDropped)
     EXPECT_EQ(m_output.str(), "Trailing horizontal white space.");
 }
 
+static const char *const s_separator{"\n    "};
+
 TEST_F(TestBreakLine, longLinesWithoutWhiteSpaceAreHardFolded)
 {
     std::string line{repeat("012345678")};
 
     stringAlgos::breakLine(m_output, line);
 
-    EXPECT_EQ(repeat("01234567") + "\n    " + repeat("8"), m_output.str());
+    EXPECT_EQ(repeat("01234567") + s_separator + repeat("8"), m_output.str());
 }
 
 TEST_F(TestBreakLine, lineWithoutWhiteSpaceExactlyLineLengthNotFolded)
@@ -89,4 +91,24 @@ TEST_F(TestBreakLine, multipleInteriorWhiteSpaceSquished)
     stringAlgos::breakLine(m_output, line);
 
     EXPECT_EQ(repeat("x") + ' ' + repeat("y"), m_output.str());
+}
+
+TEST_F(TestBreakLine, preferFoldAtNonAlphaNumeric)
+{
+    std::string first{repeat("01234") + "_________"};
+    std::string second{"(" + repeat("567")};
+
+    stringAlgos::breakLine(m_output, first + second);
+
+    EXPECT_EQ(first + s_separator + second, m_output.str());
+}
+
+TEST_F(TestBreakLine, hardFoldWhenNonAlphaNumericPastLineLength)
+{
+    std::string first{repeat("01234567")};
+    std::string second{repeat("890") + "_________"};
+
+    stringAlgos::breakLine(m_output, first + second);
+
+    EXPECT_EQ(first + s_separator + second, m_output.str());
 }
