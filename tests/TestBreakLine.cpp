@@ -5,6 +5,12 @@
 #include <iterator>
 #include <sstream>
 
+#include <boost/algorithm/string/find_format.hpp>
+#include <boost/algorithm/string/finder.hpp>
+#include <boost/algorithm/string/formatter.hpp>
+
+#include <cctype>
+
 namespace
 {
 
@@ -74,4 +80,13 @@ TEST_F(TestBreakLine, lineWithoutWhiteSpaceExactlyLineLengthNotFolded)
     stringAlgos::breakLine(m_output, line);
 
     EXPECT_EQ(line, m_output.str());
+}
+
+TEST_F(TestBreakLine, multipleInteriorWhiteSpaceSquished)
+{
+    std::string line{repeat("x \ty")};
+
+    stringAlgos::breakLine(m_output, line);
+
+    EXPECT_EQ(repeat("x") + ' ' + repeat("y"), m_output.str());
 }
