@@ -19,7 +19,7 @@ std::vector<char *> makeArgV(std::vector<std::string> &args)
     return argv;
 }
 
-TEST(makeArgv, pointersToStringData)
+TEST(TestMakeArgv, pointersToStringData)
 {
     std::vector<std::string> args{"one", "two", "three"};
 
@@ -33,23 +33,57 @@ TEST(makeArgv, pointersToStringData)
     }
 }
 
+static const char *const s_usageMessage{R"(Usage:
+stringer <command> [<infile> [<outfile>]]
+
+Use - for standard input <infile>
+
+Commands:
+tolower     Convert all upper case characters in the input to lower case.
+toupper     Convert all lower case characters in the input to upper case.
+breakline   Fold long lines at 80 columns and squish multiple whitespace.
+)"};
+
 TEST(TestStringer, missingArgumentsEmitsUsage)
 {
     std::ostringstream       err;
     std::ostringstream       out;
-    int                      argc = 1;
     std::vector<std::string> args{"stringer"};
+    int                      argc = args.size();
 
     const int result = stringer::main(argc, makeArgV(args).data(), err, out);
 
     EXPECT_EQ(1, result);
     EXPECT_TRUE(out.str().empty());
-    EXPECT_EQ(R"(Usage:
-stringer <command> [<infile> [<outfile>]]
+    EXPECT_EQ(s_usageMessage, err.str());
+}
 
-Use - for standard input <infile>
-)",
-              err.str());
+TEST(TestStringer, badCommandEmitsUsage)
+{
+    std::ostringstream       err;
+    std::ostringstream       out;
+    std::vector<std::string> args{"stringer", "foo"};
+    int                      argc = args.size();
+
+    const int result = stringer::main(argc, makeArgV(args).data(), err, out);
+
+    EXPECT_EQ(1, result);
+    EXPECT_TRUE(out.str().empty());
+    EXPECT_EQ(s_usageMessage, err.str());
+}
+
+TEST(TestString, tooManyArgumentsEmitsUsage)
+{
+    std::ostringstream       err;
+    std::ostringstream       out;
+    std::vector<std::string> args{"stringer", "tolower", "infile", "outfile", "extra"};
+    int                      argc = args.size();
+
+    const int result = stringer::main(argc, makeArgV(args).data(), err, out);
+
+    EXPECT_EQ(1, result);
+    EXPECT_TRUE(out.str().empty());
+    EXPECT_EQ(s_usageMessage, err.str());
 }
 
 TEST(TestTransformLines, invokesTransformerPerInputLine)

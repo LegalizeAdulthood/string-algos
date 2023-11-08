@@ -1,5 +1,8 @@
 #include <Stringer.h>
+
+#include <BreakLine.h>
 #include <ToLower.h>
+#include <ToUpper.h>
 
 #include <iostream>
 #include <map>
@@ -22,22 +25,42 @@ void transformLines(LineTransformer transformer, std::istream &input, std::ostre
     }
 }
 
-int main(int argc, char *argv[], std::ostream &err, std::ostream &out)
+static int usageMessage(const char *program, std::ostream &err)
 {
-    if (argc < 2)
-    {
-        // clang-format off
+    // clang-format off
         err <<
             "Usage:\n" <<
-            argv[0] << " <command> [<infile> [<outfile>]]\n"
-            "\n"
-            "Use - for standard input <infile>\n";
-        // clang-format on
-        return 1;
+            program << R"( <command> [<infile> [<outfile>]]
+
+Use - for standard input <infile>
+
+Commands:
+tolower     Convert all upper case characters in the input to lower case.
+toupper     Convert all lower case characters in the input to upper case.
+breakline   Fold long lines at 80 columns and squish multiple whitespace.
+)";
+    // clang-format on
+    return 1;
+}
+
+int main(int argc, char *argv[], std::ostream &err, std::ostream &out)
+{
+    auto usage = [&] { return usageMessage(argv[0], err); };
+    if (argc < 2 || argc > 4)
+    {
+        return usage();
     }
 
     using CommandSet = std::map<std::string, LineTransformer>;
-    CommandSet commands{{"tolower", stringAlgos::toLower}};
+    CommandSet commands{
+        {"tolower", stringAlgos::toLower}, {"toupper", stringAlgos::toUpper}, {"breakline", stringAlgos::breakLine}};
+
+    auto it = commands.find(argv[1]);
+    if (it == commands.end())
+    {
+        return usage();
+    }
+
     return 0;
 }
 
