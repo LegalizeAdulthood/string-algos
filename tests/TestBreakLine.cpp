@@ -68,7 +68,7 @@ static const char *const s_separator{"\n    "};
 
 TEST_F(TestBreakLine, longLinesWithoutWhiteSpaceAreHardFolded)
 {
-    std::string line{repeat("012345678")};
+    const std::string line{repeat("012345678")};
 
     stringAlgos::breakLine(m_output, line);
 
@@ -77,7 +77,7 @@ TEST_F(TestBreakLine, longLinesWithoutWhiteSpaceAreHardFolded)
 
 TEST_F(TestBreakLine, lineWithoutWhiteSpaceExactlyLineLengthNotFolded)
 {
-    std::string line{repeat("01234567")};
+    const std::string line{repeat("01234567")};
 
     stringAlgos::breakLine(m_output, line);
 
@@ -86,7 +86,7 @@ TEST_F(TestBreakLine, lineWithoutWhiteSpaceExactlyLineLengthNotFolded)
 
 TEST_F(TestBreakLine, multipleInteriorWhiteSpaceSquished)
 {
-    std::string line{repeat("x \ty")};
+    const std::string line{repeat("x \ty")};
 
     stringAlgos::breakLine(m_output, line);
 
@@ -95,8 +95,8 @@ TEST_F(TestBreakLine, multipleInteriorWhiteSpaceSquished)
 
 TEST_F(TestBreakLine, preferFoldAtNonAlphaNumeric)
 {
-    std::string first{repeat("01234") + "_________"};
-    std::string second{"(" + repeat("567")};
+    const std::string first{repeat("01234") + "_________"};
+    const std::string second{"(" + repeat("567")};
 
     stringAlgos::breakLine(m_output, first + second);
 
@@ -105,8 +105,8 @@ TEST_F(TestBreakLine, preferFoldAtNonAlphaNumeric)
 
 TEST_F(TestBreakLine, hardFoldWhenNonAlphaNumericPastLineLength)
 {
-    std::string first{repeat("01234567")};
-    std::string second{repeat("890") + "_________"};
+    const std::string first{repeat("01234567")};
+    const std::string second{repeat("890") + "_________"};
 
     stringAlgos::breakLine(m_output, first + second);
 
