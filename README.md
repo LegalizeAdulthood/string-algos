@@ -1,6 +1,6 @@
 # string-algos
 Boost string algorithm examples for the video [Boost String Algorithms Library](https://www.youtube.com/watch?v=23eXt2EuMLM).
-The code builds a tool called `stringer` that can operate on text files to perform the following commands:
+The code builds a tool called `Stringer` that can operate on text files to perform the following commands:
 - `tolower` convert text to lower case
 - `toupper` convert text to upper case
 - `breakline` fold lines longer than 80 columns intelligently
