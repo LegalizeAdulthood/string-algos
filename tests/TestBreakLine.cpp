@@ -131,9 +131,8 @@ TEST_F(TestBreakLine, preferFoldAtNonAlphaNumeric)
 
 TEST_F(TestBreakLine, preferFoldAtLastNonAlphaNumeric)
 {
-    const std::string first{repeat10(".....,(-")};
-    EXPECT_EQ(80, first.length());
-    const std::string second{repeat10(")567")};
+    const std::string first{repeat10("woody")};
+    const std::string second{repeat10("(xy)567")};
 
     stringAlgos::breakLine(m_output, first + second);
 

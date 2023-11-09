@@ -73,12 +73,11 @@ StringRange getWordFold(std::string &line, size_t pad)
     static auto isNotWord = [](char c) { return std::isalnum(static_cast<unsigned char>(c)) == 0 && c != '_'; };
     static auto isNotWordFinder = token_finder(isNotWord, boost::algorithm::token_compress_on);
 
-    StringRange subrange{line.begin(), line.begin() + LINE_LENGTH - pad};
-
-    StringRange wordFold = find(subrange, isNotWordFinder);
+    StringRange segment{line.begin(), line.begin() + LINE_LENGTH - pad};
+    StringRange wordFold = boost::algorithm::find(segment, isNotWordFinder);
     if (!wordFold.empty())
     {
-        return StringRange{line.begin(), wordFold.begin()};
+        return StringRange{segment.begin(), wordFold.begin()};
     }
     return StringRange{};
 }
