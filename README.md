@@ -12,3 +12,19 @@ The video/code demonstrates a little bit of test-driven development advice:
 The code obtains the boost string algorithms library from [`vcpkg`](https://vcpkg.io/en/) with a [manifest](https://learn.microsoft.com/en-us/vcpkg/concepts/manifest-mode),
 vcpkg in a [git submodule](https://git-scm.com/docs/git-submodule) and a [CMake preset](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html) to specify
 the location of the vcpkg toolchain file.
+
+# Building the Code
+
+After cloning this repository, the following commands should build the code:
+
+```
+git submodule init
+git submodule update
+cmake --preset default
+cmake --build ../build
+```
+
+You can specify a generator after `cmake --preset default` if you don't like the default generator for your platform.
+
+The default build configuration (Debug, Release, etc.) varies by the type of generator used.
+See the documentation on [CMake](https://cmake.org) for more details.
