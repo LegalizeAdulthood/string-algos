@@ -15,6 +15,8 @@ the location of the vcpkg toolchain file.
 
 # Building the Code
 
+You need CMake 3.23 or later installed to build this code.
+
 After cloning this repository, the following commands should build the code:
 
 ```
