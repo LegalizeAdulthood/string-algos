@@ -30,3 +30,7 @@ You can specify a generator after `cmake --preset default` if you don't like the
 
 The default build configuration (Debug, Release, etc.) varies by the type of generator used.
 See the documentation on [CMake](https://cmake.org) for more details.
+
+[Utah C++ Programmers](https://meetup.com/utah-cpp-programmers)\
+[Past Topics](https://utahcpp.wordpress.com/past-meeting-topics/)\
+[Future Topics](https://utahcpp.wordpress.com/future-meeting-topics/)
